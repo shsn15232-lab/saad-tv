@@ -1,0 +1,32 @@
+{
+  "server_url": "http://blue4k.net:8080",
+  "username": "your_username",
+  "password": "your_password",
+  "featured_movie": {
+    "title": "S.W.A.T. Exiles",
+    "genre": "حركة • دراما",
+    "rating": "8.4",
+    "banner": "https://image.tmdb.org/t/p/original/example.jpg",
+    "stream_url": "http://blue4k.net:8080/movie/Hanaa/..."
+  },
+  "movies": [
+    {
+      "id": 1,
+      "title": "طيور الظلام (1995)",
+      "poster": "https://via.placeholder.com/300x450",
+      "url": "http://blue4k.net:8080/movie/Hanaa/..."
+    },
+    {
+      "id": 2,
+      "title": "شمس الزناتي (1991)",
+      "poster": "https://via.placeholder.com/300x450",
+      "url": "http://blue4k.net:8080/movie/Hanaa/..."
+    },
+    {
+      "id": 3,
+      "title": "سواق الأتوبيس (1982)",
+      "poster": "https://via.placeholder.com/300x450",
+      "url": "http://blue4k.net:8080/movie/Hanaa/..."
+    }
+  ]
+}
