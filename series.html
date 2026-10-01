@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saad TV - المسلسلات</title>
+    <style>
+        :root {
+            --bg-color: #070913;
+            --card-bg: #111827;
+            --accent-red: #e50914;
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding: 20px; padding-bottom: 90px; }
+        
+        .page-title { font-size: 20px; font-weight: bold; margin-bottom: 20px; border-right: 4px solid var(--accent-red); padding-right: 10px; }
+        
+        /* شبكة عرض المسلسلات */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .series-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .series-card:active { transform: scale(0.97); }
+        .series-card img { width: 1005; height: 210px; object-fit: cover; }
+        .series-title { padding: 10px; font-size: 14px; font-weight: bold; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* شريط التنقل السفلي */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%;
+            background: rgba(11, 15, 25, 0.95);
+            backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 4px;
+            z-index: 1000;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 9px;
+            cursor: pointer;
+            text-decoration: none;
+            flex: 1;
+        }
+        .nav-item.active { color: var(--accent-red); font-weight: bold; }
+        .nav-item svg { width: 20px; height: 20px; margin-bottom: 3px; fill: currentColor; }
+    </style>
+</head>
+<body>
+
+    <div class="page-title">قائمة المسلسلات</div>
+
+    <!-- شبكة المسلسلات التي ستأتي من config.json -->
+    <div class="grid-container" id="series-container">
+        <!-- يتم التحميل هنا تلقائياً -->
+    </div>
+
+    <!-- شريط التنقل السفلي -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            الرئيسية
+        </a>
+        <a href="movies.html" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>
+            الأفلام
+        </a>
+        <a href="series.html" class="nav-item active">
+            <svg viewBox="0 0 24 24"><path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/></svg>
+            المسلسلات
+        </a>
+    </nav>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch('config.json')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('series-container');
+                    if (container && data.series) {
+                        container.innerHTML = '';
+                        data.series.forEach(item => {
+                            const card = `
+                                <div class="series-card" onclick="location.href='${item.episodes_url}'">
+                                    <img src="${item.poster}" alt="${item.title}">
+                                    <div class="series-title">${item.title}</div>
+                                </div>
+                            `;
+                            container.innerHTML += card;
+                        });
+                    }
+                })
+                .catch(err => console.error("خطأ في جلب المسلسلات:", err));
+        });
+    </script>
+</body>
+</html>
