@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saad TV - Ultra Pro</title>
+    <style>
+        :root {
+            --bg-color: #070913;
+            --card-bg: #111827;
+            --accent-red: #e50914;
+            --accent-glow: rgba(229, 9, 20, 0.4);
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 80px; }
+
+        /* الهيدر العلوي الشفاف */
+        .top-header {
+            position: absolute;
+            top: 0; left: 0; width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            z-index: 10;
+            background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
+        }
+        .header-icons { display: flex; gap: 15px; font-size: 18px; cursor: pointer; color: #fff; }
+
+        /* البانر الرئيسي الضخم بمعالجة سينمائية */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: url('https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=900') center/cover no-repeat;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 20px;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(180deg, rgba(7,9,19,0.1) 40%, var(--bg-color) 100%);
+        }
+        .hero-content { position: relative; z-index: 2; }
+        .hero-title { font-size: 26px; font-weight: 900; margin-bottom: 8px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+        .hero-meta { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-muted); }
+        .hero-meta .badge { background: var(--accent-red); padding: 3px 10px; border-radius: 6px; color: #fff; font-weight: bold; box-shadow: 0 0 10px var(--accent-glow); }
+        .hero-meta .rating { color: #facc15; font-weight: bold; }
+
+        /* العناوين والأقسام */
+        .section-title { padding: 18px 20px 10px; font-size: 16px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .section-title span.red-line { border-left: 3px solid var(--accent-red); padding-right: 8px; }
+        .section-title a { font-size: 12px; color: var(--accent-red); text-decoration: none; font-weight: bold; cursor: pointer; }
+
+        /* شريط المباريات الحية */
+        .matches-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 0 20px;
+            scrollbar-width: none;
+        }
+        .matches-scroll::-webkit-scrollbar { display: none; }
+        .match-card {
+            min-width: 160px;
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .match-league { font-size: 10px; color: var(--text-muted); margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .match-teams { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: bold; margin-bottom: 8px; }
+        .match-time { font-size: 11px; color: #ff4757; background: rgba(255,71,87,0.1); padding: 3px; border-radius: 6px; text-align: center; font-weight: bold; }
+
+        /* قسم رائج اليوم والأرقام السينمائية */
+        .trending-scroll {
+            display: flex;
+            gap: 18px;
+            overflow-x: auto;
+            padding: 0 20px 15px;
+            scrollbar-width: none;
+        }
+        .trending-scroll::-webkit-scrollbar { display: none; }
+        .trend-card {
+            position: relative;
+            min-width: 130px;
+            height: 185px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+        }
+        .trend-card img { width: 100%; height: 100%; object-fit: cover; }
+        .trend-number {
+            position: absolute;
+            bottom: -12px;
+            right: 8px;
+            font-size: 75px;
+            font-weight: 900;
+            color: var(--bg-color);
+            -webkit-text-stroke: 3px #ffffff;
+            z-index: 3;
+            line-height: 1;
+        }
+
+        /* شريط التنقل السفلي الفاخر */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%;
+            background: rgba(11, 15, 25, 0.95);
+            backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 4px;
+            z-index: 1000;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 9px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.2s;
+            flex: 1;
+        }
+        .nav-item.active { color: var(--accent-red); font-weight: bold; }
+        .nav-item svg { width: 20px; height: 20px; margin-bottom: 3px; fill: currentColor; }
+    </style>
+</head>
+<body>
+
+    <!-- الهيدر العلوي -->
+    <div class="top-header">
+        <div class="header-icons">⚙️</div>
+        <div class="header-icons">
+            <span>❤️</span>
+            <span>🔔</span>
+            <span>☰</span>
+        </div>
+    </div>
+
+    <!-- البانر الرئيسي الضخم -->
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-title">S.W.A.T. Exiles</div>
+            <div class="hero-meta">
+                <span class="badge">جاري العرض</span>
+                <span>جريمة • دراما</span>
+                <span>2026</span>
+                <span class="rating">★ 8.4</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- شريط المباريات الحية -->
+    <div class="section-title">
+        <span class="red-line">المباريات الحية</span>
+        <a>عرض الكل</a>
+    </div>
+    <div class="matches-scroll">
+        <div class="match-card">
+            <div class="match-league">دوري الأمم الأوروبية</div>
+            <div class="match-teams"><span>الدنمارك</span> <span>-</span></div>
+            <div class="match-time">7:00 م</div>
+        </div>
+        <div class="match-card">
+            <div class="match-league">تصفيات كأس أمم أفريقيا</div>
+            <div class="match-teams"><span>كينيا</span> <span>غينيا</span></div>
+            <div class="match-time">7:00 م</div>
+        </div>
+        <div class="match-card">
+            <div class="match-league">دوري الأمم الأوروبية</div>
+            <div class="match-teams"><span>ليختنشتاين</span> <span>أذربيجان</span></div>
+            <div class="match-time">7:00 م</div>
+        </div>
+    </div>
+
+    <!-- قسم رائج اليوم -->
+    <div class="section-title" style="margin-top: 10px;">
+        <span class="red-line">رائج اليوم</span>
+        <a>عرض الكل</a>
+    </div>
+    <div class="trending-scroll">
+        <div class="trend-card">
+            <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?w=300" alt="movie">
+            <div class="trend-number">1</div>
+        </div>
+        <div class="trend-card">
+            <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=300" alt="movie">
+            <div class="trend-number">2</div>
+        </div>
+        <div class="trend-card">
+            <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?w=300" alt="movie">
+            <div class="trend-number">3</div>
+        </div>
+    </div>
+
+    <!-- شريط التنقل السفلي المتكامل مع الروابط الجديدة -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            الإعدادات
+        </a>
+        <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            بحث
+        </a>
+        <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            المفضلة
+        </a>
+        <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>
+            المصارعة
+        </a>
+        <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm1-11h-2v3H8v2h3v3h2v-3h3v-2h-3z"/></svg>
+            أنمي
+        </a>
+        <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M21 3H3C2 3 1 4 1 5v14c0 1.1.9 2 2 2h18c1 0 2-1 2-2V5c0-1-1-2-2-2zm0 16H3V5h18v14zM8 15h3v-2H8v2zm0-4h3V9H8v2zm5 4h3v-2h-3v2zm0-4h3V9h-3v2z"/></svg>
+            المباريات
+        </a>
+        <a href="#" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+            القنوات
+        </a>
+        <!-- زر المسلسلات مربوط بملف series.html -->
+        <a href="series.html" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/></svg>
+            المسلسلات
+        </a>
+        <!-- زر الأفلام مربوط بملف movies.html -->
+        <a href="movies.html" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>
+            الأفلام
+        </a>
+        <!-- زر الرئيسية مربوط بملف index.html -->
+        <a href="index.html" class="nav-item active">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            الرئيسية
+        </a>
+    </nav>
+
+</body>
+</html>
