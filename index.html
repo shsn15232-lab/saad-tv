@@ -3,125 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saad TV - Ultra Pro</title>
+    <title>Saad TV - Ultra Streaming</title>
+    <!-- مكتبة تشغيل تدفقات IPTV والـ M3U8 -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         :root {
-            --bg-color: #070913;
+            --bg-color: #05070b;
             --card-bg: #111827;
             --accent-red: #e50914;
-            --accent-glow: rgba(229, 9, 20, 0.4);
+            --accent-glow: rgba(229, 9, 20, 0.5);
             --text-main: #ffffff;
             --text-muted: #9ca3af;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 80px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 90px; }
 
-        /* الهيدر العلوي الشفاف */
+        /* الهيدر العلوي */
         .top-header {
-            position: absolute;
+            position: fixed;
             top: 0; left: 0; width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 15px 20px;
-            z-index: 10;
-            background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
+            z-index: 100;
+            background: linear-gradient(180deg, rgba(5,7,11,0.95) 0%, rgba(5,7,11,0) 100%);
+            backdrop-filter: blur(5px);
         }
-        .header-icons { display: flex; gap: 15px; font-size: 18px; cursor: pointer; color: #fff; }
+        .logo { font-size: 20px; font-weight: 900; color: var(--accent-red); letter-spacing: 1px; text-shadow: 0 0 15px var(--accent-glow); }
 
-        /* البانر الرئيسي الضخم بمعالجة سينمائية */
+        /* البانر السينمائي الفخم */
         .hero {
             position: relative;
             width: 100%;
-            height: 400px;
+            height: 420px;
             background: url('https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=900') center/cover no-repeat;
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
-            padding: 20px;
+            padding: 25px;
+            margin-top: 0;
         }
         .hero::after {
             content: '';
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(180deg, rgba(7,9,19,0.1) 40%, var(--bg-color) 100%);
+            background: linear-gradient(180deg, rgba(5,7,11,0.2) 30%, var(--bg-color) 100%);
         }
         .hero-content { position: relative; z-index: 2; }
-        .hero-title { font-size: 26px; font-weight: 900; margin-bottom: 8px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
-        .hero-meta { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-muted); }
-        .hero-meta .badge { background: var(--accent-red); padding: 3px 10px; border-radius: 6px; color: #fff; font-weight: bold; box-shadow: 0 0 10px var(--accent-glow); }
-        .hero-meta .rating { color: #facc15; font-weight: bold; }
+        .hero-title { font-size: 28px; font-weight: 900; margin-bottom: 8px; text-shadow: 0 2px 10px rgba(0,0,0,0.9); }
+        .hero-btn {
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--accent-glow);
+            transition: 0.2s;
+            margin-top: 10px;
+        }
+        .hero-btn:active { transform: scale(0.95); }
 
-        /* العناوين والأقسام */
-        .section-title { padding: 18px 20px 10px; font-size: 16px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
-        .section-title span.red-line { border-left: 3px solid var(--accent-red); padding-right: 8px; }
-        .section-title a { font-size: 12px; color: var(--accent-red); text-decoration: none; font-weight: bold; cursor: pointer; }
+        /* الأقسام والشباك */
+        .section-title { padding: 20px 20px 10px; font-size: 16px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .section-title span.red-line { border-right: 4px solid var(--accent-red); padding-right: 8px; }
 
-        /* شريط المباريات الحية */
-        .matches-scroll {
+        .horizontal-scroll {
             display: flex;
-            gap: 12px;
+            gap: 14px;
             overflow-x: auto;
             padding: 0 20px;
             scrollbar-width: none;
         }
-        .matches-scroll::-webkit-scrollbar { display: none; }
-        .match-card {
-            min-width: 160px;
-            background: var(--card-bg);
-            border-radius: 14px;
-            padding: 12px;
-            border: 1px solid rgba(255,255,255,0.06);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-        .match-league { font-size: 10px; color: var(--text-muted); margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .match-teams { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: bold; margin-bottom: 8px; }
-        .match-time { font-size: 11px; color: #ff4757; background: rgba(255,71,87,0.1); padding: 3px; border-radius: 6px; text-align: center; font-weight: bold; }
+        .horizontal-scroll::-webkit-scrollbar { display: none; }
 
-        /* قسم رائج اليوم والأرقام السينمائية */
-        .trending-scroll {
-            display: flex;
-            gap: 18px;
-            overflow-x: auto;
-            padding: 0 20px 15px;
-            scrollbar-width: none;
-        }
-        .trending-scroll::-webkit-scrollbar { display: none; }
-        .trend-card {
-            position: relative;
+        .media-card {
             min-width: 130px;
-            height: 185px;
+            width: 130px;
             background: var(--card-bg);
             border-radius: 12px;
             overflow: hidden;
             flex-shrink: 0;
             border: 1px solid rgba(255,255,255,0.06);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.5);
             cursor: pointer;
+            transition: transform 0.2s;
         }
-        .trend-card img { width: 100%; height: 100%; object-fit: cover; }
-        .trend-number {
-            position: absolute;
-            bottom: -12px;
-            right: 8px;
-            font-size: 75px;
-            font-weight: 900;
-            color: var(--bg-color);
-            -webkit-text-stroke: 3px #ffffff;
-            z-index: 3;
-            line-height: 1;
-        }
+        .media-card:active { transform: scale(0.96); }
+        .media-card img { width: 100%; height: 175px; object-fit: cover; }
+        .media-title { padding: 8px; font-size: 12px; font-weight: bold; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* شريط التنقل السفلي الفاخر */
+        /* شريط التنقل السفلي الفاخر (4 أقسام فقط كما طلبت) */
         .bottom-nav {
             position: fixed;
             bottom: 0; left: 0; width: 100%;
             background: rgba(11, 15, 25, 0.95);
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
             border-top: 1px solid rgba(255,255,255,0.08);
             display: flex;
             justify-content: space-around;
-            padding: 8px 4px;
+            padding: 10px 5px;
             z-index: 1000;
         }
         .nav-item {
@@ -129,158 +113,190 @@
             flex-direction: column;
             align-items: center;
             color: var(--text-muted);
-            font-size: 9px;
+            font-size: 11px;
             cursor: pointer;
             text-decoration: none;
             transition: 0.2s;
             flex: 1;
         }
         .nav-item.active { color: var(--accent-red); font-weight: bold; }
-        .nav-item svg { width: 20px; height: 20px; margin-bottom: 3px; fill: currentColor; }
+        .nav-item svg { width: 22px; height: 22px; margin-bottom: 4px; fill: currentColor; }
+
+        /* نافذة مشغل الفيديو الداخلي (Modal Player) */
+        #player-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        #player-modal video {
+            width: 100%;
+            max-height: 80vh;
+            background: black;
+        }
+        .close-player {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 2001;
+        }
     </style>
 </head>
 <body>
 
     <!-- الهيدر العلوي -->
     <div class="top-header">
-        <div class="header-icons">⚙️</div>
-        <div class="header-icons">
-            <span>❤️</span>
-            <span>🔔</span>
-            <span>☰</span>
-        </div>
+        <div class="logo">SAAD TV</div>
+        <div style="font-size: 18px; cursor: pointer;">🔍</div>
     </div>
 
-    <!-- البانر الرئيسي الضخم -->
+    <!-- البانر الرئيسي -->
     <div class="hero" id="hero-banner">
         <div class="hero-content">
-            <div class="hero-title" id="hero-title">S.W.A.T. Exiles</div>
-            <div class="hero-meta">
-                <span class="badge">جاري العرض</span>
-                <span id="hero-genre">جريمة • دراما</span>
-                <span id="hero-year">2026</span>
-                <span class="rating" id="hero-rating">★ 8.4</span>
-            </div>
+            <div class="hero-title" id="hero-title">Saad TV Pro</div>
+            <button class="hero-btn" onclick="playFeatured()">تشغيل الآن 🎬</button>
         </div>
     </div>
 
-    <!-- شريط المباريات الحية -->
+    <!-- قسم الأفلام -->
     <div class="section-title">
-        <span class="red-line">المباريات الحية</span>
-        <a>عرض الكل</a>
+        <span class="red-line">أحدث الأفلام</span>
     </div>
-    <div class="matches-scroll" id="matches-container">
-        <!-- سيتم جلب المباريات ديناميكياً هنا -->
-    </div>
-
-    <!-- قسم رائج اليوم -->
-    <div class="section-title" style="margin-top: 10px;">
-        <span class="red-line">رائج اليوم</span>
-        <a>عرض الكل</a>
-    </div>
-    <div class="trending-scroll" id="trending-container">
-        <!-- سيتم جلب الأفلام ديناميكياً هنا -->
+    <div class="horizontal-scroll" id="movies-container">
+        <!-- يتم التحميل هنا -->
     </div>
 
-    <!-- شريط التنقل السفلي المتكامل -->
+    <!-- قسم المسلسلات -->
+    <div class="section-title" style="margin-top: 15px;">
+        <span class="red-line">أبرز المسلسلات</span>
+    </div>
+    <div class="horizontal-scroll" id="series-container">
+        <!-- يتم التحميل هنا -->
+    </div>
+
+    <!-- قسم القنوات -->
+    <div class="section-title" style="margin-top: 15px;">
+        <span class="red-line">القنوات الحية</span>
+    </div>
+    <div class="horizontal-scroll" id="channels-container">
+        <!-- يتم التحميل هنا -->
+    </div>
+
+    <!-- مشغل الفيديو الداخلي المنبثق -->
+    <div id="player-modal">
+        <button class="close-player" onclick="closePlayer()">إغلاق ✕</button>
+        <video id="video-stream" controls autoplay playsinline></video>
+    </div>
+
+    <!-- شريط التنقل السفلي (أفلام، مسلسلات، قنوات، رئيسية) -->
     <nav class="bottom-nav">
-        <a href="#" class="nav-item">
-            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-            الإعدادات
-        </a>
-        <a href="#" class="nav-item">
-            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            بحث
-        </a>
-        <a href="#" class="nav-item">
-            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-            المفضلة
-        </a>
-        <a href="#" class="nav-item">
-            <svg viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>
-            المصارعة
-        </a>
-        <a href="#" class="nav-item">
-            <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm1-11h-2v3H8v2h3v3h2v-3h3v-2h-3z"/></svg>
-            أنمي
-        </a>
-        <a href="#" class="nav-item">
-            <svg viewBox="0 0 24 24"><path d="M21 3H3C2 3 1 4 1 5v14c0 1.1.9 2 2 2h18c1 0 2-1 2-2V5c0-1-1-2-2-2zm0 16H3V5h18v14zM8 15h3v-2H8v2zm0-4h3V9H8v2zm5 4h3v-2h-3v2zm0-4h3V9h-3v2z"/></svg>
-            المباريات
-        </a>
-        <a href="#" class="nav-item">
-            <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
-            القنوات
-        </a>
-        <a href="series.html" class="nav-item">
-            <svg viewBox="0 0 24 24"><path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/></svg>
-            المسلسلات
+        <a href="index.html" class="nav-item active">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            الرئيسية
         </a>
         <a href="movies.html" class="nav-item">
             <svg viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>
             الأفلام
         </a>
-        <a href="index.html" class="nav-item active">
-            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-            الرئيسية
+        <a href="series.html" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/></svg>
+            المسلسلات
+        </a>
+        <a href="channels.html" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M21 3H3C2 3 1 4 1 5v14c0 1.1.9 2 2 2h18c1 0 2-1 2-2V5c0-1-1-2-2-2zm0 16H3V5h18v14zM8 15h3v-2H8v2zm0-4h3V9H8v2zm5 4h3v-2h-3v2zm0-4h3V9h-3v2z"/></svg>
+            القنوات
         </a>
     </nav>
 
-    <!-- كود الجافاسكريبت لجلب البيانات من config.json -->
+    <!-- الجافاسكريبت المشغل والمتحكم بالبيانات -->
     <script>
+        let currentUrl = "";
+
         document.addEventListener("DOMContentLoaded", function () {
             fetch('config.json')
                 .then(response => response.json())
                 .then(data => {
-                    console.log("تم تحميل بيانات Saad TV:", data);
-
-                    // تحديث البانر الرئيسي إذا وجد في الـ config
-                    if (data.featured_movie) {
-                        const feat = data.featured_movie;
-                        if(feat.title) document.getElementById('hero-title').innerText = feat.title;
-                        if(feat.genre) document.getElementById('hero-genre').innerText = feat.genre;
-                        if(feat.rating) document.getElementById('hero-rating').innerText = "★ " + feat.rating;
-                        if(feat.banner) document.getElementById('hero-banner').style.background = `url('${feat.banner}') center/cover no-repeat`;
-                    }
-
-                    // تحديث قسم رائج اليوم والأفلام
-                    const trendingContainer = document.getElementById('trending-container');
-                    if (trendingContainer && data.movies) {
-                        trendingContainer.innerHTML = '';
-                        data.movies.forEach((movie, index) => {
-                            const card = `
-                                <div class="trend-card" onclick="playStream('${movie.url}')">
-                                    <img src="${movie.poster}" alt="${movie.title}">
-                                    <div class="trend-number">${index + 1}</div>
-                                </div>
-                            `;
-                            trendingContainer.innerHTML += card;
+                    // تعبئة الأفلام
+                    const moviesBox = document.getElementById('movies-container');
+                    if(moviesBox && data.movies) {
+                        data.movies.forEach(m => {
+                            moviesBox.innerHTML += `
+                                <div class="media-card" onclick="openPlayer('${m.url || m.episodes_url}')">
+                                    <img src="${m.poster}" alt="${m.title}">
+                                    <div class="media-title">${m.title}</div>
+                                </div>`;
                         });
                     }
 
-                    // تحديث المباريات الحية
-                    const matchesContainer = document.getElementById('matches-container');
-                    if (matchesContainer && data.matches) {
-                        matchesContainer.innerHTML = '';
-                        data.matches.forEach(match => {
-                            const matchCard = `
-                                <div class="match-card" onclick="playStream('${match.url}')">
-                                    <div class="match-league">${match.league}</div>
-                                    <div class="match-teams"><span>${match.team1}</span> <span>${match.team2}</span></div>
-                                    <div class="match-time">${match.time}</div>
-                                </div>
-                            `;
-                            matchesContainer.innerHTML += matchCard;
+                    // تعبئة المسلسلات
+                    const seriesBox = document.getElementById('series-container');
+                    if(seriesBox && data.series) {
+                        data.series.forEach(s => {
+                            seriesBox.innerHTML += `
+                                <div class="media-card" onclick="openPlayer('${s.episodes_url || s.url}')">
+                                    <img src="${s.poster}" alt="${s.title}">
+                                    <div class="media-title">${s.title}</div>
+                                </div>`;
+                        });
+                    }
+                    
+                    // تعبئة القنوات إن وجدت
+                    const channelsBox = document.getElementById('channels-container');
+                    if(channelsBox && data.channels) {
+                        data.channels.forEach(c => {
+                            channelsBox.innerHTML += `
+                                <div class="media-card" onclick="openPlayer('${c.url}')">
+                                    <img src="${c.poster}" alt="${c.title}">
+                                    <div class="media-title">${c.title}</div>
+                                </div>`;
                         });
                     }
                 })
-                .catch(error => console.error("خطأ في جلب ملف الـ config:", error));
+                .catch(err => console.log("خطأ في جلب البيانات:", err));
         });
 
-        function playStream(url) {
-            if(url) {
-                window.location.href = url;
+        function openPlayer(url) {
+            if(!url) return;
+            currentUrl = url;
+            const modal = document.getElementById('player-modal');
+            const video = document.getElementById('video-stream');
+            
+            modal.style.display = 'flex';
+
+            if (Hls.isSupported() && url.includes('.m3u8')) {
+                const hls = new Hls();
+                hls.loadSource(url);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED,function() {
+                    video.play();
+                });
+            } else {
+                video.src = url;
+                video.play();
             }
+        }
+
+        function closePlayer() {
+            const modal = document.getElementById('player-modal');
+            const video = document.getElementById('video-stream');
+            video.pause();
+            video.src = "";
+            modal.style.display = 'none';
+        }
+
+        function playFeatured() {
+            openPlayer("http://blue4k.net:8080/movie/Hanaa/sample.mp4");
         }
     </script>
 </body>
