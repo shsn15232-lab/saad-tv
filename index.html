@@ -97,6 +97,7 @@
             flex-shrink: 0;
             border: 1px solid rgba(255,255,255,0.06);
             box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+            cursor: pointer;
         }
         .trend-card img { width: 100%; height: 100%; object-fit: cover; }
         .trend-number {
@@ -151,14 +152,14 @@
     </div>
 
     <!-- البانر الرئيسي الضخم -->
-    <div class="hero">
+    <div class="hero" id="hero-banner">
         <div class="hero-content">
-            <div class="hero-title">S.W.A.T. Exiles</div>
+            <div class="hero-title" id="hero-title">S.W.A.T. Exiles</div>
             <div class="hero-meta">
                 <span class="badge">جاري العرض</span>
-                <span>جريمة • دراما</span>
-                <span>2026</span>
-                <span class="rating">★ 8.4</span>
+                <span id="hero-genre">جريمة • دراما</span>
+                <span id="hero-year">2026</span>
+                <span class="rating" id="hero-rating">★ 8.4</span>
             </div>
         </div>
     </div>
@@ -168,22 +169,8 @@
         <span class="red-line">المباريات الحية</span>
         <a>عرض الكل</a>
     </div>
-    <div class="matches-scroll">
-        <div class="match-card">
-            <div class="match-league">دوري الأمم الأوروبية</div>
-            <div class="match-teams"><span>الدنمارك</span> <span>-</span></div>
-            <div class="match-time">7:00 م</div>
-        </div>
-        <div class="match-card">
-            <div class="match-league">تصفيات كأس أمم أفريقيا</div>
-            <div class="match-teams"><span>كينيا</span> <span>غينيا</span></div>
-            <div class="match-time">7:00 م</div>
-        </div>
-        <div class="match-card">
-            <div class="match-league">دوري الأمم الأوروبية</div>
-            <div class="match-teams"><span>ليختنشتاين</span> <span>أذربيجان</span></div>
-            <div class="match-time">7:00 م</div>
-        </div>
+    <div class="matches-scroll" id="matches-container">
+        <!-- سيتم جلب المباريات ديناميكياً هنا -->
     </div>
 
     <!-- قسم رائج اليوم -->
@@ -191,22 +178,11 @@
         <span class="red-line">رائج اليوم</span>
         <a>عرض الكل</a>
     </div>
-    <div class="trending-scroll">
-        <div class="trend-card">
-            <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?w=300" alt="movie">
-            <div class="trend-number">1</div>
-        </div>
-        <div class="trend-card">
-            <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=300" alt="movie">
-            <div class="trend-number">2</div>
-        </div>
-        <div class="trend-card">
-            <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?w=300" alt="movie">
-            <div class="trend-number">3</div>
-        </div>
+    <div class="trending-scroll" id="trending-container">
+        <!-- سيتم جلب الأفلام ديناميكياً هنا -->
     </div>
 
-    <!-- شريط التنقل السفلي المتكامل مع الروابط الجديدة -->
+    <!-- شريط التنقل السفلي المتكامل -->
     <nav class="bottom-nav">
         <a href="#" class="nav-item">
             <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
@@ -236,22 +212,76 @@
             <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
             القنوات
         </a>
-        <!-- زر المسلسلات مربوط بملف series.html -->
         <a href="series.html" class="nav-item">
             <svg viewBox="0 0 24 24"><path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/></svg>
             المسلسلات
         </a>
-        <!-- زر الأفلام مربوط بملف movies.html -->
         <a href="movies.html" class="nav-item">
             <svg viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>
             الأفلام
         </a>
-        <!-- زر الرئيسية مربوط بملف index.html -->
         <a href="index.html" class="nav-item active">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
             الرئيسية
         </a>
     </nav>
 
+    <!-- كود الجافاسكريبت لجلب البيانات من config.json -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch('config.json')
+                .then(response => response.json())
+                .then(data => {
+                    console.log("تم تحميل بيانات Saad TV:", data);
+
+                    // تحديث البانر الرئيسي إذا وجد في الـ config
+                    if (data.featured_movie) {
+                        const feat = data.featured_movie;
+                        if(feat.title) document.getElementById('hero-title').innerText = feat.title;
+                        if(feat.genre) document.getElementById('hero-genre').innerText = feat.genre;
+                        if(feat.rating) document.getElementById('hero-rating').innerText = "★ " + feat.rating;
+                        if(feat.banner) document.getElementById('hero-banner').style.background = `url('${feat.banner}') center/cover no-repeat`;
+                    }
+
+                    // تحديث قسم رائج اليوم والأفلام
+                    const trendingContainer = document.getElementById('trending-container');
+                    if (trendingContainer && data.movies) {
+                        trendingContainer.innerHTML = '';
+                        data.movies.forEach((movie, index) => {
+                            const card = `
+                                <div class="trend-card" onclick="playStream('${movie.url}')">
+                                    <img src="${movie.poster}" alt="${movie.title}">
+                                    <div class="trend-number">${index + 1}</div>
+                                </div>
+                            `;
+                            trendingContainer.innerHTML += card;
+                        });
+                    }
+
+                    // تحديث المباريات الحية
+                    const matchesContainer = document.getElementById('matches-container');
+                    if (matchesContainer && data.matches) {
+                        matchesContainer.innerHTML = '';
+                        data.matches.forEach(match => {
+                            const matchCard = `
+                                <div class="match-card" onclick="playStream('${match.url}')">
+                                    <div class="match-league">${match.league}</div>
+                                    <div class="match-teams"><span>${match.team1}</span> <span>${match.team2}</span></div>
+                                    <div class="match-time">${match.time}</div>
+                                </div>
+                            `;
+                            matchesContainer.innerHTML += matchCard;
+                        });
+                    }
+                })
+                .catch(error => console.error("خطأ في جلب ملف الـ config:", error));
+        });
+
+        function playStream(url) {
+            if(url) {
+                window.location.href = url;
+            }
+        }
+    </script>
 </body>
 </html>
